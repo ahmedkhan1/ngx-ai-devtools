@@ -1,0 +1,70 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "ngx-ai-devtools": {
+      "projectType": "library",
+      "root": "projects/ngx-ai-devtools",
+      "sourceRoot": "projects/ngx-ai-devtools/src",
+      "prefix": "ngx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-ai-devtools/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-ai-devtools/tsconfig.lib.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-ai-devtools/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
+    "demo": {
+      "projectType": "application",
+      "root": "projects/demo",
+      "sourceRoot": "projects/demo/src",
+      "prefix": "demo",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/demo",
+            "index": "projects/demo/src/index.html",
+            "browser": "projects/demo/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/demo/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {"type": "initial", "maximumWarning": "500kB", "maximumError": "1MB"}
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {"buildTarget": "demo:build:production"},
+            "development": {"buildTarget": "demo:build:development"}
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}

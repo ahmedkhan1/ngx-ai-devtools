@@ -1,0 +1,31 @@
+{
+  "name": "ngx-ai-devtools-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve demo",
+    "build": "ng build ngx-ai-devtools && ng build demo",
+    "build:lib": "ng build ngx-ai-devtools",
+    "build:demo": "ng build demo",
+    "test": "ng test ngx-ai-devtools",
+    "pack": "cd dist/ngx-ai-devtools && npm pack",
+    "publish:lib": "cd dist/ngx-ai-devtools && npm publish --access public"
+  },
+  "dependencies": {
+    "@angular/common": "^19.0.0",
+    "@angular/compiler": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "@angular/platform-browser": "^19.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.15.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.0.0",
+    "@angular/cli": "^19.0.0",
+    "@angular/compiler-cli": "^19.0.0",
+    "ng-packagr": "^19.0.0",
+    "typescript": "~5.6.0"
+  }
+}

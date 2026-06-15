@@ -1,0 +1,35 @@
+{
+  "name": "ngx-ai-devtools",
+  "version": "0.1.0",
+  "description": "Network-tab-style DevTools for LLM calls in Angular apps. See every prompt, response, token, and dollar your app spends — without leaving the browser.",
+  "keywords": [
+    "angular",
+    "ai",
+    "llm",
+    "openai",
+    "anthropic",
+    "gemini",
+    "devtools",
+    "observability",
+    "signals",
+    "debugging"
+  ],
+  "author": "Anas Khan <anaskhanchd@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Anas-Khan93/ngx-ai-devtools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Anas-Khan93/ngx-ai-devtools/issues"
+  },
+  "homepage": "https://github.com/Anas-Khan93/ngx-ai-devtools#readme",
+  "peerDependencies": {
+    "@angular/common": ">=18.1.0",
+    "@angular/core": ">=18.1.0"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}
