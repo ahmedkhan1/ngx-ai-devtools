@@ -1,6 +1,6 @@
 {
   "name": "ngx-ai-devtools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Network-tab-style DevTools for LLM calls in Angular apps. See every prompt, response, token, and dollar your app spends — without leaving the browser.",
   "keywords": [
     "angular",
@@ -14,16 +14,16 @@
     "signals",
     "debugging"
   ],
-  "author": "Anas Khan <anaskhanchd@gmail.com>",
+  "author": "Ahmed Khan <ahmed_khan019@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Anas-Khan93/ngx-ai-devtools.git"
+    "url": "https://github.com/ahmedkhan1/ngx-ai-devtools.git"
   },
   "bugs": {
-    "url": "https://github.com/Anas-Khan93/ngx-ai-devtools/issues"
+    "url": "https://github.com/ahmedkhan1/ngx-ai-devtools/issues"
   },
-  "homepage": "https://github.com/Anas-Khan93/ngx-ai-devtools#readme",
+  "homepage": "https://github.com/ahmedkhan1/ngx-ai-devtools#readme",
   "peerDependencies": {
     "@angular/common": ">=18.1.0",
     "@angular/core": ">=18.1.0"
