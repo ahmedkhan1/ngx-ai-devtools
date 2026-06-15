@@ -8,7 +8,7 @@
 [![bundle size](https://img.shields.io/bundlephobia/minzip/ngx-ai-devtools?style=flat-square&color=4ade80)](https://bundlephobia.com/package/ngx-ai-devtools)
 
 <p align="center">
-  <img src="./docs/screenshot.png" alt="ngx-ai-devtools panel showing intercepted OpenAI, Anthropic, and Gemini calls with cost, tokens, and tool-use details" width="100%" />
+  <img src="https://raw.githubusercontent.com/ahmedkhan1/ngx-ai-devtools/main/docs/screenshot.png" alt="ngx-ai-devtools panel showing intercepted OpenAI, Anthropic, and Gemini calls with cost, tokens, and tool-use details" width="100%" />
 </p>
 
 You're building an Angular app that talks to OpenAI, Anthropic, or Gemini. Every call you make is a small mystery: what did you actually send, what came back, how many tokens did it cost, and was the streaming response chunked the way you expected? `console.log` doesn't cut it. The browser Network tab won't pretty-print the body. You end up writing yet another logger every project.
