@@ -17,6 +17,12 @@ You're building an Angular app that talks to OpenAI, Anthropic, or Gemini. Every
 
 ---
 
+<p align="center">
+  <a href="https://ngx-ai-devtools.vercel.app/"><strong>→ Try the live demo</strong></a>
+</p>
+
+---
+
 ## What it does
 
 - **Intercepts every LLM call** your app makes (`fetch`, `HttpClient`, the OpenAI SDK, the Anthropic SDK, the Vercel AI SDK — anything that ultimately uses `fetch`).
