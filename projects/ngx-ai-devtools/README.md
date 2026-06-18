@@ -8,7 +8,7 @@
 [![bundle size](https://img.shields.io/bundlephobia/minzip/ngx-ai-devtools?style=flat-square&color=4ade80)](https://bundlephobia.com/package/ngx-ai-devtools)
 
 <p align="center">
-  <img src="./docs/screenshot.png" alt="ngx-ai-devtools panel showing intercepted OpenAI, Anthropic, and Gemini calls with cost, tokens, and tool-use details" width="100%" />
+  <img src="https://raw.githubusercontent.com/ahmedkhan1/ngx-ai-devtools/main/docs/screenshot.png" alt="ngx-ai-devtools panel showing intercepted OpenAI, Anthropic, and Gemini calls with cost, tokens, and tool-use details" width="100%" />
 </p>
 
 You're building an Angular app that talks to OpenAI, Anthropic, or Gemini. Every call you make is a small mystery: what did you actually send, what came back, how many tokens did it cost, and was the streaming response chunked the way you expected? `console.log` doesn't cut it. The browser Network tab won't pretty-print the body. You end up writing yet another logger every project.
@@ -187,6 +187,66 @@ All call records conform to the `LlmCall` type, which is exported from the packa
 Pricing data lives in `src/lib/pricing.ts` and ships with current rates for the major models (GPT-4o, o1/o3-mini, Claude Opus/Sonnet/Haiku 4, Gemini 2.5 Pro/Flash, Llama variants on Groq, etc). If a model isn't in the table, the call still records — it just won't have a cost attached. PRs welcome to keep the table fresh.
 
 ---
+
+## Using your own backend or proxy
+
+Most apps don't call OpenAI / Anthropic / Google directly from the browser — they go through a backend you control:
+
+```
+Browser → your /api/chat endpoint → OpenAI
+```
+
+`ngx-ai-devtools` intercepts the browser's call to your `/api/chat` and parses whatever JSON your backend returns. **If your backend strips the `usage` block or reshapes the response, tokens and cost in the panel will be blank.** The call, prompt, response, and latency still show — but cost depends on the provider's `usage` block surviving the round trip.
+
+For the library to compute cost, your backend must forward these fields:
+
+| Provider | Fields the library reads |
+|---|---|
+| OpenAI | `model`, `choices[0].message`, `choices[0].finish_reason`, `usage` |
+| Anthropic | `model`, `content`, `stop_reason`, `usage` |
+| Google | `candidates`, `usageMetadata` |
+
+The simplest pattern is to forward the provider response untouched:
+
+```ts
+// Express / Node backend
+app.post('/api/chat', async (req, res) => {
+  const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.OPENAI_KEY}` },
+    body: JSON.stringify(req.body),
+  });
+  res.json(await upstream.json());  // ← forward as-is
+});
+```
+
+Then tell the library to treat your backend path as an LLM endpoint:
+
+```ts
+provideAiDevtools({
+  additionalEndpoints: ['/api/chat'],
+});
+```
+
+If you reshape the response for your client — renaming fields, removing `usage`, returning just the text — the library can't compute cost. Either preserve the provider shape in dev, or accept blank cost fields.
+
+### Streaming gotcha (OpenAI specifically)
+
+By default, OpenAI's **streaming** responses omit the `usage` block. The text streams correctly, but token counts and cost never arrive. To get usage on streams, pass `stream_options` in the request:
+
+```ts
+{
+  model: 'gpt-4o-mini',
+  stream: true,
+  stream_options: { include_usage: true },  // ← required for token counts on streams
+  messages: [...]
+}
+```
+
+Anthropic and Google include usage on streaming responses by default — no extra option needed.
+
+---
+
 
 ## How it works
 

@@ -188,6 +188,66 @@ Pricing data lives in `src/lib/pricing.ts` and ships with current rates for the 
 
 ---
 
+## Using your own backend or proxy
+
+Most apps don't call OpenAI / Anthropic / Google directly from the browser — they go through a backend you control:
+
+```
+Browser → your /api/chat endpoint → OpenAI
+```
+
+`ngx-ai-devtools` intercepts the browser's call to your `/api/chat` and parses whatever JSON your backend returns. **If your backend strips the `usage` block or reshapes the response, tokens and cost in the panel will be blank.** The call, prompt, response, and latency still show — but cost depends on the provider's `usage` block surviving the round trip.
+
+For the library to compute cost, your backend must forward these fields:
+
+| Provider | Fields the library reads |
+|---|---|
+| OpenAI | `model`, `choices[0].message`, `choices[0].finish_reason`, `usage` |
+| Anthropic | `model`, `content`, `stop_reason`, `usage` |
+| Google | `candidates`, `usageMetadata` |
+
+The simplest pattern is to forward the provider response untouched:
+
+```ts
+// Express / Node backend
+app.post('/api/chat', async (req, res) => {
+  const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.OPENAI_KEY}` },
+    body: JSON.stringify(req.body),
+  });
+  res.json(await upstream.json());  // ← forward as-is
+});
+```
+
+Then tell the library to treat your backend path as an LLM endpoint:
+
+```ts
+provideAiDevtools({
+  additionalEndpoints: ['/api/chat'],
+});
+```
+
+If you reshape the response for your client — renaming fields, removing `usage`, returning just the text — the library can't compute cost. Either preserve the provider shape in dev, or accept blank cost fields.
+
+### Streaming gotcha (OpenAI specifically)
+
+By default, OpenAI's **streaming** responses omit the `usage` block. The text streams correctly, but token counts and cost never arrive. To get usage on streams, pass `stream_options` in the request:
+
+```ts
+{
+  model: 'gpt-4o-mini',
+  stream: true,
+  stream_options: { include_usage: true },  // ← required for token counts on streams
+  messages: [...]
+}
+```
+
+Anthropic and Google include usage on streaming responses by default — no extra option needed.
+
+---
+
+
 ## How it works
 
 At bootstrap, the library monkey-patches `window.fetch`. Calls to any URL matching a known provider (or your `additionalEndpoints`) are recorded into a signal store; everything else flows through untouched. For streaming responses, the response body is `tee()`'d so the consumer still receives the original stream while the devtools consume a copy, parsing SSE events and accumulating deltas as they arrive.
