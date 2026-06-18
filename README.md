@@ -234,12 +234,13 @@ The library detects the provider from the URL so it knows which response shape t
 
 **Recommended:** include the provider name in your proxy path so detection works:
 
-​```
-/api/openai/chat          ← detected as OpenAI
-/api/anthropic/messages   ← detected as Anthropic
-/api/gemini/generate      ← detected as Google
-/api/llm-proxy            ← falls back to OpenAI (fine if you actually use OpenAI)
-​```
+| Proxy path | Detected as |
+|---|---|
+| `/api/openai/chat` | OpenAI |
+| `/api/anthropic/messages` | Anthropic |
+| `/api/gemini/generate` | Google |
+| `/api/llm-proxy` | Falls back to OpenAI |
+
 
 If your path can't include the provider name (existing route conventions, etc.), the call still records — request, response, latency all work — but cost will be wrong if your backend talks to a non-OpenAI provider. The fix is either to rename the route, or accept blank/wrong cost on those calls.
 
