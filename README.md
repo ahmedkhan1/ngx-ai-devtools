@@ -222,11 +222,26 @@ app.post('/api/chat', async (req, res) => {
 
 Then tell the library to treat your backend path as an LLM endpoint:
 
-```ts
+​```ts
 provideAiDevtools({
   additionalEndpoints: ['/api/chat'],
 });
-```
+​```
+
+### Provider detection on proxy URLs
+
+The library detects the provider from the URL so it knows which response shape to parse. For the major provider URLs (`api.openai.com`, `api.anthropic.com`, etc.) detection is automatic. For your own backend paths, the library looks for a provider keyword in the URL — `openai`, `anthropic`, `claude`, `google`, `gemini`, `mistral`, `groq`, or `cohere`. If none is found, it falls back to the OpenAI parser.
+
+**Recommended:** include the provider name in your proxy path so detection works:
+
+​```
+/api/openai/chat          ← detected as OpenAI
+/api/anthropic/messages   ← detected as Anthropic
+/api/gemini/generate      ← detected as Google
+/api/llm-proxy            ← falls back to OpenAI (fine if you actually use OpenAI)
+​```
+
+If your path can't include the provider name (existing route conventions, etc.), the call still records — request, response, latency all work — but cost will be wrong if your backend talks to a non-OpenAI provider. The fix is either to rename the route, or accept blank/wrong cost on those calls.
 
 If you reshape the response for your client — renaming fields, removing `usage`, returning just the text — the library can't compute cost. Either preserve the provider shape in dev, or accept blank cost fields.
 

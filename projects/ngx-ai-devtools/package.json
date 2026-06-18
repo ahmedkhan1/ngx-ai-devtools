@@ -1,6 +1,6 @@
 {
   "name": "ngx-ai-devtools",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Network-tab-style DevTools for LLM calls in Angular apps. See every prompt, response, token, and dollar your app spends — without leaving the browser.",
   "keywords": [
     "angular",
