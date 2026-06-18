@@ -10,7 +10,18 @@ export function detectProvider(url: string, extra: string[] = []): Provider {
   if (url.includes('api.mistral.ai')) return 'mistral';
   if (url.includes('api.cohere.ai') || url.includes('api.cohere.com')) return 'cohere';
   if (url.includes('api.groq.com')) return 'groq';
-  if (extra.some((e) => url.includes(e))) return 'openai'; // best-effort default for proxies
+
+  // If matched via additionalEndpoints, infer provider from path keywords.
+  // This handles proxy patterns like /api/anthropic/... or /openai-proxy/...
+  if (extra.some((e) => url.includes(e))) {
+    if (/\b(anthropic|claude)\b/i.test(url)) return 'anthropic';
+    if (/\b(google|gemini|generativelanguage)\b/i.test(url)) return 'google';
+    if (/\b(mistral)\b/i.test(url)) return 'mistral';
+    if (/\b(groq)\b/i.test(url)) return 'groq';
+    if (/\b(cohere)\b/i.test(url)) return 'cohere';
+    return 'openai'; // default for unknown proxies (most common shape)
+  }
+
   return 'unknown';
 }
 
