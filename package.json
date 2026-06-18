@@ -1,6 +1,6 @@
 {
   "name": "ngx-ai-devtools-workspace",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "private": true,
   "scripts": {
     "ng": "ng",

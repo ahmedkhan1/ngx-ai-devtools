@@ -276,13 +276,11 @@ In production builds where `enabled: false`, neither the patch nor the UI is ins
 
 ## Why this exists
 
-I kept building AI features in Angular apps and kept doing the same dance: open Chrome DevTools, find the request in the Network tab, copy the request body into a JSON viewer, do the same with the response, mentally calculate the cost from token counts, then repeat the whole thing ten minutes later when I tweaked the prompt.
+Debugging LLM calls in the browser is genuinely painful. You make a call, something goes wrong, and now you're three tabs deep: Network panel for the request, a JSON viewer for the body, a calculator for the cost. Ten minutes later you tweak the prompt and do it all over again.
 
-So I built the panel I wanted. It looks good, it does the thing, it stays out of your way until you call it.
+`ngx-ai-devtools` puts all of that in one floating panel inside your app. Every call your code makes — prompt, response, tokens, cost, tool use, streaming — recorded as it happens, structured the way you'd structure it if you wrote the logger yourself. Which you probably have, twice, in two different projects.
 
-It's not a replacement for production observability — LangSmith, Helicone, and Langfuse are excellent at that and you should reach for them once you're past prototyping. `ngx-ai-devtools` is the debugger you want *while* you're still figuring out what to ship.
-
----
+Use it in development to iterate on prompts. Use it in staging to verify what your app actually sends to the model. Use it in production behind a feature flag to debug live issues without redeploying. The library is one provider call, signal-based, zero RxJS, tree-shakeable to nothing when disabled.
 
 ## What's intentionally not here yet
 
