@@ -6,3 +6,7 @@ out-tsc/
 .DS_Store
 .vscode/
 .idea/
+
+proxy/.env
+
+package-lock.json

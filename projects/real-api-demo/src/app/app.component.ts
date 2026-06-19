@@ -120,7 +120,7 @@ export class AppComponent {
 
   private async checkProxy(): Promise<void> {
     try {
-      const r = await fetch(`${PROXY}/openai/v1/chat/completions`, { method: 'OPTIONS' });
+      const r = await fetch(`${PROXY}/ai1/v1/chat/completions`, { method: 'OPTIONS' });
       this.proxyStatus.set(r.ok || r.status === 204 ? 'online ✓' : 'unexpected status: ' + r.status);
     } catch {
       this.proxyStatus.set('OFFLINE — start the proxy in the proxy/ folder');
@@ -141,7 +141,7 @@ export class AppComponent {
   }
 
   fireOpenAi(): Promise<void> {
-    return this.post(`${PROXY}/openai/v1/chat/completions`, {
+    return this.post(`${PROXY}/ai1/v1/chat/completions`, {
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: 'You are concise.' },
@@ -152,7 +152,7 @@ export class AppComponent {
   }
 
   fireOpenAiStream(): Promise<void> {
-    return this.post(`${PROXY}/openai/v1/chat/completions`, {
+    return this.post(`${PROXY}/ai1/v1/chat/completions`, {
       model: 'gpt-4o-mini',
       stream: true,
       messages: [{ role: 'user', content: 'Write a haiku about debugging.' }],
@@ -161,7 +161,7 @@ export class AppComponent {
   }
 
   fireAnthropic(): Promise<void> {
-    return this.post(`${PROXY}/anthropic/v1/messages`, {
+    return this.post(`${PROXY}/ai2/v1/messages`, {
       model: 'claude-sonnet-4-5',
       max_tokens: 80,
       messages: [{ role: 'user', content: 'In one sentence: what is Angular?' }],
@@ -169,7 +169,7 @@ export class AppComponent {
   }
 
   fireAnthropicTool(): Promise<void> {
-    return this.post(`${PROXY}/anthropic/v1/messages`, {
+    return this.post(`${PROXY}/ai2/v1/messages`, {
       model: 'claude-sonnet-4-5',
       max_tokens: 256,
       tools: [{
@@ -186,7 +186,7 @@ export class AppComponent {
   }
 
   fireGemini(): Promise<void> {
-    return this.post(`${PROXY}/google/v1beta/models/gemini-2.5-flash:generateContent`, {
+    return this.post(`${PROXY}/ai3/v1beta/models/gemini-2.5-flash:generateContent`, {
       contents: [{ role: 'user', parts: [{ text: 'List three Angular best practices in one line each.' }] }],
       generationConfig: { maxOutputTokens: 200 },
     });
