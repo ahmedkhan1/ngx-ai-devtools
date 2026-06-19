@@ -81,6 +81,17 @@ export interface LlmCall {
   rawResponse?: unknown;
 }
 
+/**
+ * An endpoint hint tells the library which provider's response shape to
+ * expect for a given URL pattern. Use the object form when your proxy path
+ * doesn't contain a provider keyword (anthropic, openai, gemini, etc.).
+ *
+ * Examples:
+ *   '/api/chat'                                    // detect by URL keyword
+ *   { path: '/api/chat', provider: 'anthropic' }   // explicit provider
+ */
+export type EndpointHint = string | { path: string; provider: Provider };
+
 export interface AiDevtoolsConfig {
   /**
    * When false, the devtools do not patch fetch and do not render. Defaults to true.
@@ -113,9 +124,23 @@ export interface AiDevtoolsConfig {
    */
   redact?: boolean;
   /**
-   * Additional URL substrings to treat as LLM endpoints. Use this for custom proxies.
+   * URL patterns to treat as LLM endpoints, beyond the built-in provider URLs.
+   *
+   * Two forms supported:
+   * - string: URL substring. Provider is detected from URL keywords
+   *   (anthropic, openai, claude, gemini, etc).
+   * - object: `{ path, provider }`. Explicit provider, no URL renaming required.
+   *
+   * Example:
+   * ```ts
+   * additionalEndpoints: [
+   *   { path: '/api/chat', provider: 'anthropic' },
+   *   { path: '/api/llm-stream', provider: 'openai' },
+   *   '/api/legacy-llm',  // string form, falls back to keyword detection
+   * ]
+   * ```
    */
-  additionalEndpoints?: string[];
+  additionalEndpoints?: EndpointHint[];
 }
 
 export interface PriceEntry {

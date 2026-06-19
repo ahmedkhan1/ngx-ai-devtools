@@ -80,7 +80,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
   // Route by path. The browser hits these; we forward to real providers.
-  if (url.pathname === '/openai/v1/chat/completions') {
+  if (url.pathname === '/ai1/v1/chat/completions') {
     if (!KEYS.openai) return failNoKey(res, 'OPENAI_API_KEY');
     return forward(
       'https://api.openai.com/v1/chat/completions',
@@ -90,7 +90,7 @@ const server = http.createServer(async (req, res) => {
     );
   }
 
-  if (url.pathname === '/anthropic/v1/messages') {
+  if (url.pathname === '/ai2/v1/messages') {
     if (!KEYS.anthropic) return failNoKey(res, 'ANTHROPIC_API_KEY');
     return forward(
       'https://api.anthropic.com/v1/messages',
@@ -104,7 +104,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Google Gemini: model is in the URL.
-  const geminiMatch = url.pathname.match(/^\/google\/v1beta\/models\/(.+):(generateContent|streamGenerateContent)$/);
+  const geminiMatch = url.pathname.match(/^\/ai3\/v1beta\/models\/(.+):(generateContent|streamGenerateContent)$/);
   if (geminiMatch) {
     if (!KEYS.google) return failNoKey(res, 'GOOGLE_API_KEY');
     const [, model, action] = geminiMatch;
@@ -128,8 +128,8 @@ server.listen(PORT, () => {
   console.log('  Anthropic: ' + (KEYS.anthropic ? 'yes' : 'NO (set ANTHROPIC_API_KEY)'));
   console.log('  Google:    ' + (KEYS.google ? 'yes' : 'NO (set GOOGLE_API_KEY)'));
   console.log('\nRoutes:');
-  console.log('  POST /openai/v1/chat/completions');
-  console.log('  POST /anthropic/v1/messages');
-  console.log('  POST /google/v1beta/models/<model>:generateContent');
+  console.log('  POST /ai1/v1/chat/completions');
+  console.log('  POST /ai2/v1/messages');
+  console.log('  POST /ai3/v1beta/models/<model>:generateContent');
   console.log('\nPress Ctrl+C to stop.\n');
 });

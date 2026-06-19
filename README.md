@@ -59,21 +59,20 @@ A floating launcher pill appears in the bottom-right corner. That's it.
 ```ts
 provideAiDevtools({
   enabled: !environment.production,
-  additionalEndpoints: ['/api/openai', '/api/anthropic', '/api/gemini'],
-  // ↑ list the paths your backend exposes for LLM calls
+  additionalEndpoints: [
+    { path: '/api/chat', provider: 'anthropic' },
+    { path: '/api/stream', provider: 'openai' },
+  ],
 });
 ```
 
 If you skip this step, your calls go through but **nothing shows up in the panel**. The library only intercepts URLs it recognizes.
 
-**Important:** include the provider name in your proxy path so the library knows which response parser to use:
+The `provider` field tells the library which response shape to parse. Supported values: `'openai'`, `'anthropic'`, `'google'`, `'mistral'`, `'groq'`, `'cohere'`.
 
-| Proxy path | Detected as |
-|---|---|
-| `/api/openai/chat` | OpenAI |
-| `/api/anthropic/messages` | Anthropic |
-| `/api/gemini/generate` | Google |
-| `/api/llm-proxy` | Falls back to OpenAI |
+**No route renames required.** Your existing paths stay exactly as they are.
+
+If you'd rather keep the old string form (and your URL contains a provider keyword like `/api/anthropic/...`), that still works for backward compatibility.
 
 If you call OpenAI/Anthropic/Google directly from the browser (no proxy), you can skip Step 3 — those URLs are auto-detected.
 

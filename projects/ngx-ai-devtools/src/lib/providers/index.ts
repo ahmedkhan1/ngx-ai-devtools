@@ -1,9 +1,18 @@
-import { LlmCall, Provider } from '../types';
+import { EndpointHint, LlmCall, Provider } from '../types';
 import { isOpenAi, parseOpenAiRequest, parseOpenAiResponse, accumulateOpenAiStream } from './openai.parser';
 import { isAnthropic, parseAnthropicRequest, parseAnthropicResponse, accumulateAnthropicStream } from './anthropic.parser';
 import { isGoogle, parseGoogleRequest, parseGoogleResponse } from './google.parser';
 
-export function detectProvider(url: string, extra: string[] = []): Provider {
+/**
+ * Detect which provider a URL belongs to.
+ *
+ * Priority order:
+ *   1. Built-in provider URLs (api.openai.com, etc.)
+ *   2. Explicit { path, provider } hint in additionalEndpoints
+ *   3. URL keyword detection on string-form additionalEndpoints matches
+ *   4. 'unknown'
+ */
+export function detectProvider(url: string, extra: EndpointHint[] = []): Provider {
   if (isOpenAi(url)) return 'openai';
   if (isAnthropic(url)) return 'anthropic';
   if (isGoogle(url)) return 'google';
@@ -11,23 +20,41 @@ export function detectProvider(url: string, extra: string[] = []): Provider {
   if (url.includes('api.cohere.ai') || url.includes('api.cohere.com')) return 'cohere';
   if (url.includes('api.groq.com')) return 'groq';
 
-  // If matched via additionalEndpoints, infer provider from path keywords.
-  // This handles proxy patterns like /api/anthropic/... or /openai-proxy/...
-  if (extra.some((e) => url.includes(e))) {
+  // Check explicit hints first — they win over keyword detection.
+  for (const hint of extra) {
+    if (typeof hint === 'object' && url.includes(hint.path)) {
+      return hint.provider;
+    }
+  }
+
+  // Fall through to keyword detection on string-form matches.
+  const stringMatches = extra.some((e) => {
+    if (typeof e === 'string') return url.includes(e);
+    return false;
+  });
+
+  if (stringMatches) {
     if (/\b(anthropic|claude)\b/i.test(url)) return 'anthropic';
     if (/\b(google|gemini|generativelanguage)\b/i.test(url)) return 'google';
     if (/\b(mistral)\b/i.test(url)) return 'mistral';
     if (/\b(groq)\b/i.test(url)) return 'groq';
     if (/\b(cohere)\b/i.test(url)) return 'cohere';
-    return 'openai'; // default for unknown proxies (most common shape)
+    return 'openai';
   }
 
   return 'unknown';
 }
 
-export function isLlmEndpoint(url: string, extra: string[] = []): boolean {
-  if (detectProvider(url, extra) !== 'unknown') return true;
-  return extra.some((e) => url.includes(e));
+/**
+ * True if this URL should be intercepted by the devtools (known provider or
+ * matched by additionalEndpoints).
+ */
+export function isLlmEndpoint(url: string, extra: EndpointHint[] = []): boolean {
+  if (detectProvider(url, []) !== 'unknown') return true;
+  return extra.some((e) => {
+    if (typeof e === 'string') return url.includes(e);
+    return url.includes(e.path);
+  });
 }
 
 export function parseRequest(provider: Provider, body: unknown, url: string, call: Partial<LlmCall>): void {
