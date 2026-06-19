@@ -8,3 +8,5 @@ out-tsc/
 .idea/
 
 proxy/.env
+
+package-lock.json
